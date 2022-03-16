@@ -1,0 +1,14 @@
+.productHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 10px;
+  flex-wrap: wrap;
+}
+.productContainer {
+  box-shadow: 1px 1px 5px gray;
+  padding: 10px;
+}
+.table{
+    margin-top: 50px;
+}

@@ -1,0 +1,16 @@
+.addproductContainer{
+    box-shadow: 1px 1px 5px gray;
+    padding: 10px;
+}
+.addproductheader{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+}
+.form{
+    margin-top: 50px;
+}
+.savebtn{
+    text-align: right;
+}
