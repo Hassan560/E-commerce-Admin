@@ -378,30 +378,32 @@
 import { Button, Divider } from "@mui/material";
 import React from "react";
 
-import Table from "../../components/Table";
+import ProductsTable from "../../components/Table";
 
 import "./Products.css";
 
 import { useNavigate } from "react-router-dom";
 
+
 const Products = () => {
   const navigate = useNavigate();
-
   return (
-    <div className="productContainer">
-      <div className="productHeader">
-        <h2>PRODUCTS</h2>
-        <div>
-          <Button onClick={() => navigate("addproduct")} variant="contained">
-            Create
-          </Button>
+    <>
+      <div className="productContainer">
+        <div className="productHeader">
+          <h2>PRODUCTS</h2>
+          <div>
+            <Button onClick={() => navigate("addproduct")} variant="contained">
+              Create
+            </Button>
+          </div>
+        </div>
+        <Divider />
+        <div className="table">
+          <ProductsTable />
         </div>
       </div>
-      <Divider />
-      <div className="table">
-        <Table />
-      </div>
-    </div>
+    </>
   );
 };
 

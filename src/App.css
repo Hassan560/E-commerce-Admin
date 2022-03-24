@@ -1,57 +1,24 @@
 .cardContainer {
   display: flex;
-  justify-content: space-between;
+  justify-content: space-around;
   flex-wrap: wrap;
-  justify-self: center;
 }
 .card {
-  width: 300px;
-  height: 150px;
-  margin-top: 15px;
-  padding-left: 10px;
-  display: flex;
-  align-items: center;
   color: white;
-  box-shadow: 1px 1px 10px gray;
   background: linear-gradient(to right, #5a189a, #9d4edd, #c77dff);
 }
 .card2 {
-  width: 300px;
-  height: 150px;
-  margin-top: 15px;
-  padding-left: 10px;
-  display: flex;
-  color: white;
-  align-items: center;
-  box-shadow: 1px 1px 10px gray;
   background: linear-gradient(to right, #ff7b00, #ff9500, #ffaa00, #ffd000);
+  color: white;
 }
 .card3 {
-  width: 300px;
-  height: 150px;
-  margin-top: 15px;
-  padding-left: 10px;
-  display: flex;
   color: white;
-  align-items: center;
-  box-shadow: 1px 1px 10px gray;
   background: linear-gradient(to right, #031911, #05291c, #073928, #0d6244);
 }
 
 /* chart */
 
 .chartContainer {
-  /* margin: 42px; */
-  /* margin: 20px; */
   width: 100%;
-  margin-top: 100px;
-  box-shadow: 1px 1px 10px gray;
-  padding: 30px 20px;
+  margin-top: 50px;
 }
-/* .css-12i7wg6-MuiPaper-root-MuiDrawer-paper{
-  margin-top: 65px!important;
-} */
-/* .homeContainer {
-  /* margin-left: 170px; */
-  /* top: 80px; */
-  /* margin-top: 100px; */

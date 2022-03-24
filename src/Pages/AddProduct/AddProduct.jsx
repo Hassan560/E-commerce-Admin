@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext } from "react";
 
 // addproduct css
 import "./AddProduct.css";
@@ -12,27 +12,22 @@ import {
   Container,
   Divider,
   IconButton,
-  Stack,
   TextField,
 } from "@mui/material";
 
 import { useNavigate } from "react-router-dom";
-import styled from "@emotion/styled";
+import { AuthContext } from "../../Context/ProductsProvider";
+
+// import { toast, ToastContainer } from "react-toastify";
+// import "react-toastify/dist/ReactToastify.css";
+
+import { db } from "../../Firebase/FirebaseAuth";
+import { addDoc, collection, Timestamp } from "firebase/firestore";
 
 const AddProduct = () => {
-  const [products, setProducts] = useState({
-    name: "",
-    category: "",
-    price: "",
-    description: "",
-    image: "",
-  });
-
   const navigate = useNavigate();
 
-  const Input = styled("input")({
-    display: "none",
-  });
+  const { products, setProducts } = useContext(AuthContext);
 
   const getValue = (e) => {
     setProducts({
@@ -41,9 +36,29 @@ const AddProduct = () => {
     });
   };
 
-  const submit = (e) => {
-    e.preventDefault();
-    console.log(products);
+  const submit = async (e) => {
+    if (products.name && products.category && products.price) {
+      e.preventDefault();
+
+      try {
+        await addDoc(collection(db, "products"), {
+          products, 
+          time: Timestamp.fromDate(new Date()),
+        });
+        alert("added successfully");
+        setProducts({
+          name: "",
+          category: "",
+          price: "",
+          description: "",
+          image: "",
+        });
+      } catch (e) {
+        console.error("error adding doc", e);
+      }
+    } else {
+      alert("error");
+    }
   };
 
   return (
@@ -59,67 +74,59 @@ const AddProduct = () => {
       <Divider />
       <div className="form">
         <Container maxWidth="sm">
-          <div style={{ marginTop: "10px" }}>
-            <TextField
-              required
-              fullWidth
-              label="Product-Name"
-              value={products.name}
-              onChange={getValue}
-              name="name"
-            />
-          </div>
-          <div style={{ marginTop: "30px" }}>
-            <TextField
-              required
-              fullWidth
-              label="Category"
-              value={products.category}
-              onChange={getValue}
-              name="category"
-            />
-          </div>
-          <div style={{ marginTop: "30px" }}>
-            <TextField
-              required
-              fullWidth
-              type="number"
-              label="Price"
-              value={products.price}
-              onChange={getValue}
-              name="price"
-            />
-          </div>
-          <div style={{ marginTop: "30px" }}>
-            <TextField
-              fullWidth
-              multiline
-              label="Description"
-              value={products.description}
-              onChange={getValue}
-              name="description"
-            />
-          </div>
-          <div style={{ marginTop: "30px" }}>
-            <label htmlFor="contained-button-file">
-              <Input
-                accept="image/*"
-                id="contained-button-file"
-                multiple
-                type="file"
-                name="image"
+          <form>
+            <div style={{ marginTop: "10px" }}>
+              <TextField
+                required
+                fullWidth
+                label="Product-Name"
+                value={products.name}
+                onChange={getValue}
+                name="name"
               />
-              <Button
-                variant="contained"
+            </div>
+            <div style={{ marginTop: "30px" }}>
+              <TextField
+                required
+                fullWidth
+                label="Category"
+                value={products.category}
+                onChange={getValue}
+                name="category"
+              />
+            </div>
+            <div style={{ marginTop: "30px" }}>
+              <TextField
+                required
+                fullWidth
+                type="number"
+                label="Price"
+                value={products.price}
+                onChange={getValue}
+                name="price"
+              />
+            </div>
+            <div style={{ marginTop: "30px" }}>
+              <TextField
+                fullWidth
+                multiline
+                label="Description"
+                value={products.description}
+                onChange={getValue}
+                name="description"
+              />
+            </div>
+            <div style={{ marginTop: "30px" }}>
+              <TextField
+                fullWidth
+                required
+                type="file"
                 value={products.image}
                 onChange={getValue}
-                color="info"
-                component="span"
-              >
-                Upload Image
-              </Button>
-            </label>
-          </div>
+                name="image"
+              />
+            </div>
+          </form>
           <div className="savebtn">
             <Button
               variant="contained"

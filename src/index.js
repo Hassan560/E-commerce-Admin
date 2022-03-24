@@ -5,6 +5,7 @@ import App from './App';
 
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { BrowserRouter } from 'react-router-dom';
+import ProductsProvider from './Context/ProductsProvider';
 
 const theme = createTheme({
   palette: {
@@ -19,13 +20,15 @@ const theme = createTheme({
 });
 
 ReactDOM.render(
-  <React.StrictMode>
-    <BrowserRouter>
-    <ThemeProvider theme={theme}>
-      <App />
-    </ThemeProvider>
-    </BrowserRouter>
-  </React.StrictMode>,
+  <ProductsProvider>
+    <React.StrictMode>
+      <BrowserRouter>
+        <ThemeProvider theme={theme}>
+          <App />
+        </ThemeProvider>
+      </BrowserRouter>
+    </React.StrictMode>,
+  </ProductsProvider>,
   document.getElementById('root')
 );
 
