@@ -7,6 +7,8 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { BrowserRouter } from 'react-router-dom';
 import ProductsProvider from './Context/ProductsProvider';
 
+import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer } from 'react-toastify';
 const theme = createTheme({
   palette: {
     primary: {
@@ -25,6 +27,7 @@ ReactDOM.render(
       <BrowserRouter>
         <ThemeProvider theme={theme}>
           <App />
+          <ToastContainer/>
         </ThemeProvider>
       </BrowserRouter>
     </React.StrictMode>,

@@ -9,17 +9,14 @@ const ProductsProvider = ({ children }) => {
         category: "",
         price: "",
         description: "",
-        image: "",
+        rating: "",
+        imageUrl: "",
       });
-    
-      // const [data,setData] = useState([])
 
       return(
     <AuthContext.Provider value={{
         products,
         setProducts,
-        // data,
-        // setData
     }}>
         {children}
         </AuthContext.Provider>

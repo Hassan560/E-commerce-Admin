@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 
 // addproduct css
 import "./AddProduct.css";
@@ -18,16 +18,17 @@ import {
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../Context/ProductsProvider";
 
-// import { toast, ToastContainer } from "react-toastify";
-// import "react-toastify/dist/ReactToastify.css";
-
-import { db } from "../../Firebase/FirebaseAuth";
+import { db, storage } from "../../Firebase/FirebaseAuth";
 import { addDoc, collection, Timestamp } from "firebase/firestore";
+import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage'
+import { toast } from "react-toastify";
 
 const AddProduct = () => {
   const navigate = useNavigate();
 
   const { products, setProducts } = useContext(AuthContext);
+
+  const [progress, setProgress] = useState(0)
 
   const getValue = (e) => {
     setProducts({
@@ -35,30 +36,62 @@ const AddProduct = () => {
       [e.target.name]: e.target.value,
     });
   };
+  const getImage = (e) => {
+    setProducts({
+      ...products,
+      imageUrl: e.target.files[0]
+    })
+  }
 
   const submit = async (e) => {
-    if (products.name && products.category && products.price) {
-      e.preventDefault();
+    if (!products.name && !products.category && !products.price) {
+      alert('Please fill the form')
+      return
+    }
+    const storageRef = ref(storage, `/images/${Date.now()}${products.imageUrl.name}`)
 
-      try {
-        await addDoc(collection(db, "products"), {
-          products, 
-          time: Timestamp.fromDate(new Date()),
-        });
-        alert("added successfully");
+    const uploadImage = uploadBytesResumable(storageRef, products.imageUrl)
+
+    uploadImage.on("state_changed", (snapshot) => {
+      const progress = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100)
+      setProgress(progress)
+    },
+      (err) => {
+        console.log(err)
+      },
+      () => {
         setProducts({
           name: "",
           category: "",
           price: "",
           description: "",
-          image: "",
-        });
-      } catch (e) {
-        console.error("error adding doc", e);
+          rating: "",
+          imageUrl: "",
+        })
+        getDownloadURL(uploadImage.snapshot.ref)
+          .then((url) => {
+            const addData = collection(db, "products")
+            addDoc(addData, {
+              products: {
+                name: products.name,
+                category: products.category,
+                price: products.price,
+                description: products.description,
+                rating: products.rating,
+                imageUrl: url,
+                time: Timestamp.fromDate(new Date())
+              }
+            })
+              .then(() => {
+                toast("Products added successfully", { type: 'success', position: toast.POSITION.TOP_CENTER })
+                setProgress(0)
+              })
+              .catch((err) => {
+                toast("Error adding products", { type: 'error', position: toast.POSITION.TOP_CENTER })
+              })
+          })
       }
-    } else {
-      alert("error");
-    }
+    )
   };
 
   return (
@@ -74,7 +107,7 @@ const AddProduct = () => {
       <Divider />
       <div className="form">
         <Container maxWidth="sm">
-          <form>
+          <form autoComplete="Off">
             <div style={{ marginTop: "10px" }}>
               <TextField
                 required
@@ -118,11 +151,23 @@ const AddProduct = () => {
             </div>
             <div style={{ marginTop: "30px" }}>
               <TextField
+                required
+                fullWidth
+                type="number"
+                label="Rating"
+                value={products.rating}
+                onChange={getValue}
+                name="rating"
+              />
+            </div>
+            <div style={{ marginTop: "30px" }}>
+              <TextField
                 fullWidth
                 required
                 type="file"
+                accept="image/jpg"
                 value={products.image}
-                onChange={getValue}
+                onChange={getImage}
                 name="image"
               />
             </div>
