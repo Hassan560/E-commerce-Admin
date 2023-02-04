@@ -1,6 +1,7 @@
 import React from 'react';
 
 import DrawerPage from './Pages/DrawerPage';
+import LogIn from './Pages/LogIn';
 
 // pages
 // import HomePage from './Pages/HomePage';
@@ -12,6 +13,7 @@ import DrawerPage from './Pages/DrawerPage';
 function App() {
   return (
     <div>
+      {/* <LogIn/> */}
       <DrawerPage />
     </div>
   );

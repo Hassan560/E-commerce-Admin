@@ -1,46 +1,37 @@
-import React from "react";
+import React, { Fragment } from "react";
 
-import { Button, Container, TextField, Typography } from "@mui/material";
-import { Box } from "@mui/system";
+import LoginComponet from "../components/UI-componets/LoginComponet";
+import LoginButton from "../components/UI/Button";
+import InputText from "../components/UI/InputText";
+import { useFormik } from "formik";
+
+const initialValue = {
+  email: '',
+  password: ''
+}
 
 function LogIn() {
-  return (
-    <div>
-      <Container maxWidth="xs">
-        <Box p={2} mt={15} boxShadow={2} textAlign="center" borderRadius={3}>
-          <Typography variant="h5" color="textSecondary">
-            ADMIN
-          </Typography>
-          <TextField
-            id="outlined-basic"
-            label="Email"
-            variant="outlined"
-            size="small"
-            fullWidth
-            margin="normal"
-            type="email"
-          />
 
-          <TextField
-            id="outlined-basic"
-            label="Password"
-            variant="outlined"
-            size="small"
-            fullWidth
-            margin="normal"
-            type="password"
-          />
-          <br />
-          <br />
-          <Button variant="contained" fullWidth color="primary">
-            <Typography color="secondary.light" variant="h6">
-              LOGIN
-            </Typography>
-          </Button>
-        </Box>
-      </Container>
-    </div>
-  );
+    const formik = useFormik({
+      initialValues: initialValue,
+      onSubmit: (value) => {
+        console.log(value);
+      }
+    })
+    console.log(formik);
+    return(
+      <form>
+      <LoginComponet>
+        <InputText type="email" label="E-mail" value={formik.values.email}/>
+        <br />
+        <br />
+        <InputText type="password" label="Password" value={formik.values.password}/>
+        <br />
+        <br />
+        <LoginButton>Login</LoginButton>
+      </LoginComponet>
+    </form>
+      )
 }
 
 export default LogIn;

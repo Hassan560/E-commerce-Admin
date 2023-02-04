@@ -10,7 +10,7 @@ import {
 
 import "../App.css";
 
-const Chart = ({ data, datakey, grid }) => {
+const Chart = ({ data, grid }) => {
   return (
     <div className="chartContainer">
       <ResponsiveContainer width="100%" aspect={3}>
@@ -28,7 +28,7 @@ const Chart = ({ data, datakey, grid }) => {
           <CartesianGrid />
           <XAxis dataKey="name" stroke="#5E1B9E" />
           <Tooltip />
-          <Line type="monotone" dataKey={datakey} stroke="#5E1B9E" />
+          <Line type="monotone"  stroke="#5E1B9E" />
         </LineChart>
       </ResponsiveContainer>
     </div>

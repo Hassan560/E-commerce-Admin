@@ -17,18 +17,23 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 
 import { Routes, Route } from "react-router-dom";
+
+// components
 import HomePage from "./HomePage";
 import Products from "./Products/Products";
 import Orders from "./Orders";
+import AddProduct from "./AddProduct/AddProduct";
+import EditProducts from "./EditProducts";
+import Users from "./Users";
 
 import { useNavigate } from "react-router-dom";
 import { Home } from "@mui/icons-material";
-import PhonelinkIcon from "@mui/icons-material/Phonelink";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import PowerSettingsNewIcon from "@mui/icons-material/PowerSettingsNew";
-import AddProduct from "./AddProduct/AddProduct";
+import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
+import PeopleIcon from "@mui/icons-material/People";
 
-const drawerWidth = 240;
+const drawerWidth = 220;
 
 const openedMixin = (theme) => ({
   width: drawerWidth,
@@ -116,13 +121,18 @@ export default function MiniDrawer() {
     },
     {
       text: "Products",
-      icon: <PhonelinkIcon />,
+      icon: <LibraryBooksIcon />,
       onClick: () => navigate("products"),
     },
     {
       text: "Orders",
       icon: <ShoppingCartIcon />,
       onClick: () => navigate("orders"),
+    },
+    {
+      text: "Users",
+      icon: <PeopleIcon />,
+      onClick: () => navigate("users"),
     },
     {
       text: "Logout",
@@ -202,9 +212,11 @@ export default function MiniDrawer() {
         <DrawerHeader />
         <Routes>
           <Route path="/" element={<HomePage />} />
-          <Route path="products" element={<Products />} />
-          <Route path="orders" element={<Orders />} />
-          <Route path="products/addproduct" element={<AddProduct />} />
+          <Route path="/products" element={<Products />} />
+          <Route path="/orders" element={<Orders />} />
+          <Route path="/users" element={<Users />} />
+          <Route path="/addproduct" element={<AddProduct />} />
+          <Route path="/products/editproducts/:id" element={<EditProducts />} />
         </Routes>
       </Box>
     </Box>

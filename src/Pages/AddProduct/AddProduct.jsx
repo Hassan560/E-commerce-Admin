@@ -1,7 +1,4 @@
-import React, { useContext, useState } from "react";
-
-// addproduct css
-import "./AddProduct.css";
+import React, { useState, useContext } from "react";
 
 // icons
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
@@ -16,88 +13,58 @@ import {
 } from "@mui/material";
 
 import { useNavigate } from "react-router-dom";
-import { AuthContext } from "../../Context/ProductsProvider";
 
-import { db, storage } from "../../Firebase/FirebaseAuth";
-import { addDoc, collection, Timestamp } from "firebase/firestore";
-import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage'
 import { toast } from "react-toastify";
+import InputText from "../../components/UI/InputText";
+import BookContext from "../../components/Context/Book-Context";
+
+// addproduct css
+import "./AddProduct.css";
 
 const AddProduct = () => {
   const navigate = useNavigate();
-
-  const { products, setProducts } = useContext(AuthContext);
-
-  const [progress, setProgress] = useState(0)
-
-  const getValue = (e) => {
-    setProducts({
-      ...products,
-      [e.target.name]: e.target.value,
-    });
-  };
-  const getImage = (e) => {
-    setProducts({
-      ...products,
-      imageUrl: e.target.files[0]
-    })
-  }
+  const { BookValue, setBookValue } = useContext(BookContext);
 
   const submit = async (e) => {
-    if (!products.name && !products.category && !products.price) {
-      alert('Please fill the form')
-      return
-    }
-    const storageRef = ref(storage, `/images/${Date.now()}${products.imageUrl.name}`)
+    e.preventDefault();
+    const { Name, AuthorName, Price, Image, Description, Status, Category } =
+      BookValue;
 
-    const uploadImage = uploadBytesResumable(storageRef, products.imageUrl)
-
-    uploadImage.on("state_changed", (snapshot) => {
-      const progress = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100)
-      setProgress(progress)
-    },
-      (err) => {
-        console.log(err)
+    const res = await fetch("http://192.168.1.109:5000/addbooks", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/",
       },
-      () => {
-        setProducts({
-          name: "",
-          category: "",
-          price: "",
-          description: "",
-          rating: "",
-          imageUrl: "",
-        })
-        getDownloadURL(uploadImage.snapshot.ref)
-          .then((url) => {
-            const addData = collection(db, "products")
-            addDoc(addData, {
-              products: {
-                name: products.name,
-                category: products.category,
-                price: products.price,
-                description: products.description,
-                rating: products.rating,
-                imageUrl: url,
-                time: Timestamp.fromDate(new Date())
-              }
-            })
-              .then(() => {
-                toast("Products added successfully", { type: 'success', position: toast.POSITION.TOP_CENTER })
-                setProgress(0)
-              })
-              .catch((err) => {
-                toast("Error adding products", { type: 'error', position: toast.POSITION.TOP_CENTER })
-              })
-          })
-      }
-    )
+      body: JSON.stringify({
+        Name,
+        AuthorName,
+        Price,
+        Image,
+        Description,
+        Status,
+        Category,
+      }),
+    });
+    await res.json();
+    if ((Name, AuthorName, Price, Image, Description, Status, Category)) {
+      toast("Books Add Successfully", {
+        type: "success",
+        postion: toast.POSITION.TOP_CENTER,
+      });
+
+      navigate("/products");
+    } else {
+      toast("Please Fill the Field", {
+        type: "error",
+        position: toast.POSITION.TOP_CENTER,
+      });
+    }
   };
 
   return (
     <div className="addproductContainer">
       <div className="addproductheader">
-        <h2>ADD-PRODUCTS</h2>
+        <h2>ADD-BOOKS</h2>
         <div>
           <IconButton onClick={() => navigate(-1)}>
             <ArrowBackIcon />
@@ -107,80 +74,108 @@ const AddProduct = () => {
       <Divider />
       <div className="form">
         <Container maxWidth="sm">
-          <form autoComplete="Off">
+          <form autoComplete="Off" method="POST">
             <div style={{ marginTop: "10px" }}>
-              <TextField
-                required
-                fullWidth
-                label="Product-Name"
-                value={products.name}
-                onChange={getValue}
-                name="name"
+              <InputText
+                type="text"
+                label="Book's Name"
+                onChange={(e) =>
+                  setBookValue({
+                    ...BookValue,
+                    Name: e.target.value,
+                  })
+                }
+                value={BookValue.Name}
               />
             </div>
             <div style={{ marginTop: "30px" }}>
-              <TextField
-                required
-                fullWidth
-                label="Category"
-                value={products.category}
-                onChange={getValue}
-                name="category"
+              <InputText
+                type="text"
+                label="Author-Name"
+                onChange={(e) =>
+                  setBookValue({
+                    ...BookValue,
+                    AuthorName: e.target.value,
+                  })
+                }
+                value={BookValue.AuthorName}
               />
             </div>
             <div style={{ marginTop: "30px" }}>
-              <TextField
-                required
-                fullWidth
+              <InputText
                 type="number"
                 label="Price"
-                value={products.price}
-                onChange={getValue}
-                name="price"
+                onChange={(e) =>
+                  setBookValue({
+                    ...BookValue,
+                    Price: e.target.value,
+                  })
+                }
+                value={BookValue.Price}
               />
             </div>
             <div style={{ marginTop: "30px" }}>
-              <TextField
-                fullWidth
-                multiline
+              <InputText
+                type="text"
                 label="Description"
-                value={products.description}
-                onChange={getValue}
-                name="description"
+                onChange={(e) =>
+                  setBookValue({
+                    ...BookValue,
+                    Description: e.target.value,
+                  })
+                }
+                value={BookValue.Description}
               />
             </div>
             <div style={{ marginTop: "30px" }}>
-              <TextField
-                required
-                fullWidth
+              <InputText
+                type="text"
+                label="Category"
+                onChange={(e) =>
+                  setBookValue({
+                    ...BookValue,
+                    Category: e.target.value,
+                  })
+                }
+                value={BookValue.Category}
+              />
+            </div>
+            <div style={{ marginTop: "30px" }}>
+              <InputText
                 type="number"
-                label="Rating"
-                value={products.rating}
-                onChange={getValue}
-                name="rating"
+                label="Status"
+                onChange={(e) =>
+                  setBookValue({
+                    ...BookValue,
+                    Status: e.target.value,
+                  })
+                }
+                value={BookValue.Status}
               />
             </div>
             <div style={{ marginTop: "30px" }}>
-              <TextField
-                fullWidth
-                required
-                type="file"
-                accept="image/jpg"
-                value={products.image}
-                onChange={getImage}
-                name="image"
+              <InputText
+                type="text"
+                label="Book-Image"
+                onChange={(e) =>
+                  setBookValue({
+                    ...BookValue,
+                    Image: e.target.value,
+                  })
+                }
+                value={BookValue.Image}
               />
+            </div>
+            <div className="savebtn">
+              <Button
+                onClick={submit}
+                variant="contained"
+                endIcon={<SaveAltIcon />}
+              >
+                Save
+              </Button>
             </div>
           </form>
-          <div className="savebtn">
-            <Button
-              variant="contained"
-              onClick={submit}
-              endIcon={<SaveAltIcon />}
-            >
-              Save
-            </Button>
-          </div>
         </Container>
       </div>
     </div>

@@ -1,90 +1,120 @@
 import React, { useState, useEffect } from "react";
 
-import Table from "react-bootstrap/Table";
-import { Avatar, IconButton } from "@mui/material";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
+// import Table from "react-bootstrap/Table";
+// import { Avatar, IconButton } from "@mui/material";
+// import EditIcon from "@mui/icons-material/Edit";
+// import DeleteIcon from "@mui/icons-material/Delete";
+// import { SyncLoader } from "react-spinners";
+// import { toast } from "react-toastify";
+// import { Link } from "react-router-dom";
 
-import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
-import { db } from "../Firebase/FirebaseAuth";
-import { toast } from "react-toastify";
+import MyMaterialTable from "./UI-componets/MyMaterialTable";
+import { getBooks, deleteBooks,getBooksById } from "./Consts/BooksApi";
+import { useContext } from "react";
+import BookContext from "./Context/Book-Context";
+import { useNavigate } from "react-router-dom";
+import { Image } from "@mui/icons-material";
 
-const ProductsTable = () => {
-  const [data, setData] = useState([]);
+const FormName = "Books";
+
+let booksCol = [
+  {
+    title: "ID",
+    field: "_id",
+  },
+  {
+    title: "Avatar",
+    field: "Image",
+    render: (rowData) => (
+      <img
+        src={rowData.Image}
+        style={{ width: 50, height: 50, borderRadius: "50%" }}
+        alt="Book image"
+      />
+    ),
+  },
+  {
+    title: "Name",
+    field: "Name",
+  },
+  {
+    title: "AuthorName",
+    field: "AuthorName",
+  },
+  {
+    title: "Price",
+    field: "Price",
+  },
+  {
+    title: "Description",
+    field: "Description",
+  },
+  {
+    title: "Category",
+    field: "Category",
+  },
+  {
+    title: "Status",
+    field: "Status",
+  },
+];
+
+
+const ProductsTable = ({ searchInput }) => {
+  const {BookValue,setBookValue} = useContext(BookContext)
+  const navigate = useNavigate();
+
+  const [books, setBooks] = useState({
+    columns: booksCol,
+    rows: [],
+  });
+  // const [loader, setLoader] = useState(false);
+
+  const fetchData = async () => {
+    const payload = {
+      pageNumber: 1,
+      pageSize: 5
+    }
+    const res = await getBooks(payload);
+    setBooks((prevState) => ({
+      ...prevState,
+      rows: res.data,
+      columns: booksCol,
+    }));
+  };
 
   useEffect(() => {
-    const getData = async () => {
-      const item = await getDocs(collection(db, "products"))
-      console.log(item)
-      setData(item.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
-    };
-    getData();
+    fetchData();
   }, []);
 
-  const deleteData = async (id) => {
-    const docRef = doc(db, "products", id)
-    await deleteDoc(docRef)
-    toast("Your products deleted successfully", { type: "success", position: toast.POSITION.TOP_CENTER })
+  // delete book
+  const deleteData = async (evrnt,rowData) => {
+     await deleteBooks({
+      _id: rowData._id  
+     });
+    fetchData()
+  };
+
+  // edit book 
+  const editData = async (event,rowData) => {
+    const result = await getBooksById({
+      _id: rowData._id
+    })
+    setBookValue({...BookValue, ...result.data.data})
+    navigate(`editproducts/${rowData._id}`)  
   }
-
   return (
-    <div>
-      {
-        data.length === 0 ? (
-          <h3 style={{textAlign: 'center'}}>No Products</h3>
-        ): (
-
-          <Table responsive="sm">
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Product image</th>
-            <th>Product Name</th>
-            <th>Product Category</th>
-            <th>Product Price</th>
-            <th>Product Rating</th>
-            <th colSpan="2">Actions</th>
-          </tr>
-        </thead>
-        <tbody style={{ overflowY: "scroll" }}>
-          {data.map((items, index) => {
-            const { name, price, category, description,rating, imageUrl } = items.products
-            return (
-              <tr key={index}>
-                <td style={{ paddingTop: "25px" }}>{index}</td>
-                <td>
-                  <Avatar sx={{ width: 60, height: 60, }} src={imageUrl} alt="src" />
-                </td>
-                <td style={{ fontSize: "20px", paddingTop: "20px" }}>
-                  {name}
-                </td>
-                <td style={{ fontSize: "20px", paddingTop: "20px" }}>
-                  {category}
-                </td>
-                <td style={{ fontSize: "20px", paddingTop: "20px" }}>
-                  {price}
-                </td>
-                <td style={{ fontSize: "20px", paddingTop: "20px" }}>
-                  {rating}
-                </td>
-                <td style={{ fontSize: "20px", paddingTop: "20px" }}>
-                  <IconButton>
-                    <EditIcon color="success" />
-                  </IconButton>
-                </td>
-                <td style={{ fontSize: "20px", paddingTop: "20px" }}>
-                  <IconButton onClick={(id) => deleteData(items.id)}>
-                    <DeleteIcon color="error" />
-                  </IconButton>
-                </td>
-              </tr>
-            );
-          }
-          )}
-        </tbody>
-      </Table>
-    )}
-    </div>
+    <MyMaterialTable
+      columns={books.columns}
+      data={books.rows}
+      formName={FormName}
+      onDelete={(event,rowData) => {
+        deleteData(event,rowData)
+      }}
+      onEdit={(event,rowData) => {
+        editData(event,rowData)
+      }}
+    />
   );
 };
 
